@@ -1,36 +1,6 @@
 <template>
   <v-app class="cardd">
-    <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <h2 class="font-weight-black">Dolar Time</h2>
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn exact :to="{ name: 'Home' }" text>
-        <span class="mr-2">Home</span>
-        <v-icon>fas fa-th-list</v-icon>
-      </v-btn>
-      <v-btn exact :to="{ name: 'DolarCl' }" text>
-        <span class="mr-2">Chile</span>
-        <v-icon>fas fa-th-list</v-icon>
-      </v-btn>
-      <v-btn exact :to="{ name: 'DolarV' }" text>
-        <span class="mr-2">Venezuela</span>
-        <v-icon>fas fa-th-list</v-icon>
-      </v-btn>
-      
-    </v-app-bar>
-
+   
     <v-content>
       <router-view></router-view>
 

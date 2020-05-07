@@ -7,17 +7,12 @@ Vue.use(VueRouter)
   {
     path: '/',
     name: 'Home',
-    component: () => import(/* webpackChunkName: "Home" */ '../views/Home.vue')
+    component: () => import(/* webpackChunkName: "Home" */ '../views/Venezuela/Calendario.vue')
   },
   {
     path: '/chile',
     name: 'DolarCl',
     component: () => import(/* webpackChunkName: "DolarCl" */ '../views/Chile/Calendario.vue')
-  },
-  {
-    path: '/venezuela',
-    name: 'DolarV',
-    component: () => import(/* webpackChunkName: "DolarCl" */ '../views/Venezuela/Calendario.vue')
   }
   
 ]
