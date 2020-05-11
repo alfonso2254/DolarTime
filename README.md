@@ -6,10 +6,10 @@ _Aplicación web para saber el precio del dolar en Venezuela así como también 
 
 #Screenshot
 ![ScreenShot](src/assets/screenshot/ss1.JPG)
-![ScreenShot](src/assets/screenshot/ss1.JPG)
-![ScreenShot](src/assets/screenshot/ss1.JPG)
-![ScreenShot](src/assets/screenshot/ss1.JPG)
-![ScreenShot](src/assets/screenshot/ss1.JPG)
+![ScreenShot](src/assets/screenshot/ss2.JPG)
+![ScreenShot](src/assets/screenshot/ss3.JPG)
+![ScreenShot](src/assets/screenshot/ss4.JPG)
+![ScreenShot](src/assets/screenshot/ss5.JPG)
 
 ## Comenzando 🚀
 
