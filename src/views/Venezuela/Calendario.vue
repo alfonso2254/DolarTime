@@ -22,18 +22,20 @@
               </v-flex>
                 <v-flex>
                   <v-date-picker
+                  :min="min"
+                  :max="max"
                   class="calendario"
                   :scrollable="true"
                   locale="es-011"
                   style="border-radius:20px 1px;"
                   v-model="fechaActual"
-                  @change="getDolar(fechaActual, horaSelect)"
+                  @change="getDolarHistorico(fechaActual, horaSelect)"
                 >
                 <v-select
                 class="reloj"
                 :rounded="true"
                 v-model="horaSelect"
-                @change="getDolar(fechaActual, horaSelect)"
+                @change="getDolarHistorico(fechaActual, horaSelect)"
                 :items="horaItem"
                 outlined
                 color="primary"
@@ -64,8 +66,13 @@
                 :align-center="true" 
                 :justify-center="true">
                 <v-flex class="resulCambio">
+                  
                   <h1>
-                    Bs: {{ decimal(promedioTotal, 2, "Bs") }}
+                    Bs: {{ decimal(historial_promedioTotal, 2, "Bs") }}
+                    <small>
+                      <small>{{porcentaje_promedioTotal[0]}}</small>
+                      {{porcentaje_promedioTotal[1]}}
+                    </small>
                   </h1>
                 </v-flex>
                 
@@ -132,11 +139,11 @@
                     </v-flex>
 
                     <v-flex xs1 sm1 md1>
-                      ↓
+                      {{porcentaje_DolarToday[0]}}
                     </v-flex>
 
                     <v-flex xs2 sm3 md3>
-                      -100,15%
+                      {{porcentaje_DolarToday[1]}}
                     </v-flex>
                   </v-layout>
 
@@ -150,11 +157,11 @@
                     </v-flex>
 
                     <v-flex xs1 sm1 md1>
-                      ↓
+                      {{porcentaje_LocalBitcoin[0]}}
                     </v-flex>
 
                     <v-flex xs2 sm3 md3>
-                      -0,15%
+                      {{porcentaje_LocalBitcoin[1]}}
                     </v-flex>
                   </v-layout>
                   <v-layout ml-1 :justify-center="true" :align-center="true" class="box">
@@ -167,11 +174,11 @@
                     </v-flex>
 
                     <v-flex xs1 sm1 md1>
-                      ↓
+                      {{porcentaje_AirTM[0]}}
                     </v-flex>
 
                     <v-flex xs2 sm3 md3>
-                      -0,15%
+                      {{porcentaje_AirTM[1]}}
                     </v-flex>
                   </v-layout>
                   <v-layout ml-1 :justify-center="true" :align-center="true" class="box">
@@ -184,11 +191,11 @@
                     </v-flex>
 
                     <v-flex xs1 sm1 md1>
-                      ↓
+                      {{porcentaje_BolivarCucuta[0]}}
                     </v-flex>
 
                     <v-flex xs2 sm3 md3>
-                      -0,15%
+                      {{porcentaje_BolivarCucuta[1]}}
                     </v-flex>
                   </v-layout>
                   <v-layout ml-1 :justify-center="true" :align-center="true" class="box">
@@ -201,11 +208,12 @@
                     </v-flex>
 
                     <v-flex xs1 sm1 md1>
-                      ↓
+                      {{porcentaje_Yadioio[0]}}
                     </v-flex>
 
                     <v-flex xs2 sm3 md3>
-                      -0,15%
+                      {{porcentaje_Yadioio[1]}}
+                      {{porcentaje_Yadioio[2]}}
                     </v-flex>
                   </v-layout>
                   <v-layout ml-1 :justify-center="true" :align-center="true" class="box">
@@ -218,11 +226,11 @@
                     </v-flex>
 
                     <v-flex xs1 sm1 md1>
-                      ↓
+                      {{ porcentaje_Movicambio[0] }}
                     </v-flex>
 
                     <v-flex xs2 sm3 md3>
-                      -0,15%
+                      {{ porcentaje_Movicambio[1] }}
                     </v-flex>
                   </v-layout>
                   <v-layout ml-1 :justify-center="true" :align-center="true" class="box">
@@ -235,11 +243,11 @@
                     </v-flex>
 
                     <v-flex xs1 sm1 md1>
-                      ↓
+                      {{ porcentaje_Mkambio[0] }}
                     </v-flex>
 
                     <v-flex xs2 sm3 md3>
-                      -0,15%
+                      {{ porcentaje_Mkambio[1] }}
                     </v-flex>
                   </v-layout>
                 </v-layout>
@@ -272,7 +280,9 @@ export default {
   data() {
     return {
       fechaActual: new Date().toISOString().substr(0, 10),
-      horaSelect: "9:00 AM",
+      min: '2019-12-10',
+      max: '2020-05-08',
+      horaSelect: '',
       horaItem: ["9:00 AM", "1:00 PM", "5:00 PM"],
       MonedaSelect: "USD",
       Moneda: [
@@ -280,8 +290,7 @@ export default {
         { text: "Bs Bolivares", value: "BS" },
       ],
       importe: 1,
-      noHistorial: true,
-      //Variables de los precios
+      //Inicio Variables del dia de hoy
       promedioTotal: 0,
       DolarToday: 0,
       LocalBitcoin: 0,
@@ -290,7 +299,35 @@ export default {
       Yadioio: 0,
       Movicambio: 0,
       Mkambio: 0,
-      fullscreen: false
+      horaActual: '',
+      diaActual: '',
+      mesActual: '',
+      añoActual: '',
+      //Fin Variables del dia de hoy
+
+      //Inicio variables del dia de ayer para sacar porcentaje
+      Ayer_promedioTotal: 0,
+      Ayer_DolarToday: 0,
+      Ayer_LocalBitcoin: 0,
+      Ayer_AirTM: 0,
+      Ayer_BolivarCucuta: 0,
+      Ayer_Yadioio: 0,
+      Ayer_Movicambio: 0,
+      Ayer_Mkambio: 0,
+      //Fin variables del dia de ayer para sacar porcentaje
+
+      //Inicio Variables historicos
+      noHistorial: true,
+      historial_promedioTotal: 0,
+      historial_DolarToday: 0,
+      historial_LocalBitcoin: 0,
+      historial_AirTM: 0,
+      historial_BolivarCucuta: 0,
+      historial_Yadioio: 0,
+      historial_Movicambio: 0,
+      historial_Mkambio: 0,
+      //Fin Variables historicos
+
     };
   },
   computed: {
@@ -312,10 +349,10 @@ export default {
       let result;
 
       if (this.MonedaSelect === "USD") {
-        result = this.importe * this.promedioTotal;
+        result = this.importe * this.historial_promedioTotal;
         result = this.decimal(result, 2, "Bs");
       } else if (this.MonedaSelect === "BS") {
-        result = this.importe / this.promedioTotal;
+        result = this.importe / this.historial_promedioTotal;
         result = this.decimal(result, 2, "$");
       }
       return result;
@@ -323,10 +360,10 @@ export default {
     CalculoDolarToday() {
       let result;
       if (this.MonedaSelect === "USD") {
-        result = this.importe * this.DolarToday;
+        result = this.importe * this.historial_DolarToday;
         result = this.decimal(result, 2, "Bs");
       } else if (this.MonedaSelect === "BS") {
-        result = this.importe / this.DolarToday;
+        result = this.importe / this.historial_DolarToday;
         result = this.decimal(result, 2, "$");
       }
       return result;
@@ -334,10 +371,10 @@ export default {
     CalculoLocalBitcoin() {
       let result;
       if (this.MonedaSelect === "USD") {
-        result = this.importe * this.LocalBitcoin;
+        result = this.importe * this.historial_LocalBitcoin;
         result = this.decimal(result, 2, "Bs");
       } else if (this.MonedaSelect === "BS") {
-        result = this.importe / this.LocalBitcoin;
+        result = this.importe / this.historial_LocalBitcoin;
         result = this.decimal(result, 2, "$");
       }
       return result;
@@ -345,10 +382,10 @@ export default {
     CalculoAirTM() {
       let result;
       if (this.MonedaSelect === "USD") {
-        result = this.importe * this.AirTM;
+        result = this.importe * this.historial_AirTM;
         result = this.decimal(result, 2, "Bs");
       } else if (this.MonedaSelect === "BS") {
-        result = this.importe / this.AirTM;
+        result = this.importe / this.historial_AirTM;
         result = this.decimal(result, 2, "$");
       }
       return result;
@@ -356,10 +393,10 @@ export default {
     CalculoBolivarCucuta() {
       let result;
       if (this.MonedaSelect === "USD") {
-        result = this.importe * this.BolivarCucuta;
+        result = this.importe * this.historial_BolivarCucuta;
         result = this.decimal(result, 2, "Bs");
       } else if (this.MonedaSelect === "BS") {
-        result = this.importe / this.BolivarCucuta;
+        result = this.importe / this.historial_BolivarCucuta;
         result = this.decimal(result, 2, "$");
       }
       return result;
@@ -367,10 +404,10 @@ export default {
     CalculoYadioio() {
       let result;
       if (this.MonedaSelect === "USD") {
-        result = this.importe * this.Yadioio;
+        result = this.importe * this.historial_Yadioio;
         result = this.decimal(result, 2, "Bs");
       } else if (this.MonedaSelect === "BS") {
-        result = this.importe / this.Yadioio;
+        result = this.importe / this.historial_Yadioio;
         result = this.decimal(result, 2, "$");
       }
       return result;
@@ -378,10 +415,10 @@ export default {
     CalculoMovicambio() {
       let result;
       if (this.MonedaSelect === "USD") {
-        result = this.importe * this.Movicambio;
+        result = this.importe * this.historial_Movicambio;
         result = this.decimal(result, 2, "Bs");
       } else if (this.MonedaSelect === "BS") {
-        result = this.importe / this.Movicambio;
+        result = this.importe / this.historial_Movicambio;
         result = this.decimal(result, 2, "$");
       }
       return result;
@@ -389,14 +426,233 @@ export default {
     CalculoMkambio() {
       let result;
       if (this.MonedaSelect === "USD") {
-        result = this.importe * this.Mkambio;
+        result = this.importe * this.historial_Mkambio;
         result = this.decimal(result, 2, "Bs");
       } else if (this.MonedaSelect === "BS") {
-        result = this.importe / this.Mkambio;
+        result = this.importe / this.historial_Mkambio;
         result = this.decimal(result, 2, "$");
       }
       return result;
     },
+    //Inicio Calculo del porcentaje
+    porcentaje_promedioTotal (){
+      let Actual = this.promedioTotal
+      let Historico = this.Ayer_promedioTotal
+      let Historial = this.historial_promedioTotal
+      let senal
+      let n
+      let result
+      let arrayResult = []
+      
+
+      if (Historial == Actual) {
+        n      = (Actual - Historico)
+        result = ((n*100)/Historico)
+      } else {
+        n = (Actual - Historial)
+        result = ((n*100)/Historial)
+      }
+
+      if      (Math.sign(n)== 0) {senal = "="} 
+      else if (Math.sign(n)== 1) {senal = "↑"}
+      else if (Math.sign(n)== -1) {senal = "↓"}
+
+      arrayResult.push(senal)
+      arrayResult.push(this.decimal(result, 2, "%"))
+
+      return arrayResult
+    },
+    porcentaje_DolarToday(){
+      let Actual = this.DolarToday
+      let Historico = this.Ayer_DolarToday
+      let Historial = this.historial_DolarToday
+      let senal
+      let n
+      let result
+      let arrayResult = []
+      
+
+      if (Historial == Actual) {
+        n      = (Actual - Historico)
+        result = ((n*100)/Historico)
+      } else {
+        n = (Actual - Historial)
+        result = ((n*100)/Historial)
+      }
+
+      if      (Math.sign(n)== 0) {senal = "="} 
+      else if (Math.sign(n)== 1) {senal = "↑"}
+      else if (Math.sign(n)== -1) {senal = "↓"}
+
+      arrayResult.push(senal)
+      arrayResult.push(this.decimal(result, 2, "%"))
+
+      return arrayResult
+    },
+    porcentaje_LocalBitcoin(){
+      let Actual = this.LocalBitcoin
+      let Historico = this.Ayer_LocalBitcoin
+      let Historial = this.historial_LocalBitcoin
+      let senal
+      let n
+      let result
+      let arrayResult = []
+      
+
+      if (Historial == Actual) {
+        n      = (Actual - Historico)
+        result = ((n*100)/Historico)
+      } else {
+        n = (Actual - Historial)
+        result = ((n*100)/Historial)
+      }
+
+      if      (Math.sign(n)== 0) {senal = "="} 
+      else if (Math.sign(n)== 1) {senal = "↑"}
+      else if (Math.sign(n)== -1) {senal = "↓"}
+
+      arrayResult.push(senal)
+      arrayResult.push(this.decimal(result, 2, "%"))
+
+      return arrayResult
+    },
+    porcentaje_AirTM(){
+      let Actual = this.AirTM
+      let Historico = this.Ayer_AirTM
+      let Historial = this.historial_AirTM
+      let senal
+      let n
+      let result
+      let arrayResult = []
+      
+
+      if (Historial == Actual) {
+        n      = (Actual - Historico)
+        result = ((n*100)/Historico)
+      } else {
+        n = (Actual - Historial)
+        result = ((n*100)/Historial)
+      }
+
+      if      (Math.sign(n)== 0) {senal = "="} 
+      else if (Math.sign(n)== 1) {senal = "↑"}
+      else if (Math.sign(n)== -1) {senal = "↓"}
+
+      arrayResult.push(senal)
+      arrayResult.push(this.decimal(result, 2, "%"))
+
+      return arrayResult
+    },
+    porcentaje_BolivarCucuta(){
+      let Actual = this.BolivarCucuta
+      let Historico = this.Ayer_BolivarCucuta
+      let Historial = this.historial_BolivarCucuta
+      let senal
+      let n
+      let result
+      let arrayResult = []
+      
+
+      if (Historial == Actual) {
+        n      = (Actual - Historico)
+        result = ((n*100)/Historico)
+      } else {
+        n = (Actual - Historial)
+        result = ((n*100)/Historial)
+      }
+
+      if      (Math.sign(n)== 0) {senal = "="} 
+      else if (Math.sign(n)== 1) {senal = "↑"}
+      else if (Math.sign(n)== -1) {senal = "↓"}
+
+      arrayResult.push(senal)
+      arrayResult.push(this.decimal(result, 2, "%"))
+
+      return arrayResult
+    },
+    porcentaje_Yadioio(){
+      let Actual = this.Yadioio
+      let Historico = this.Ayer_Yadioio
+      let Historial = this.historial_Yadioio
+      let senal
+      let n
+      let result
+      let arrayResult = []
+      
+
+      if (Historial == Actual) {
+        n      = (Actual - Historico)
+        result = ((n*100)/Historico)
+      } else {
+        n = (Actual - Historial)
+        result = ((n*100)/Historial)
+      }
+
+      if      (Math.sign(n)== 0) {senal = "="} 
+      else if (Math.sign(n)== 1) {senal = "↑"}
+      else if (Math.sign(n)== -1) {senal = "↓"}
+
+      arrayResult.push(senal)
+      arrayResult.push(this.decimal(result, 2, "%"))
+
+      return arrayResult
+    },
+    porcentaje_Movicambio(){
+      let Actual = this.Movicambio
+      let Historico = this.Ayer_Movicambio
+      let Historial = this.historial_Movicambio
+      let senal
+      let n
+      let result
+      let arrayResult = []
+      
+
+      if (Historial == Actual) {
+        n      = (Actual - Historico)
+        result = ((n*100)/Historico)
+      } else {
+        n = (Actual - Historial)
+        result = ((n*100)/Historial)
+      }
+
+      if      (Math.sign(n)== 0) {senal = "="} 
+      else if (Math.sign(n)== 1) {senal = "↑"}
+      else if (Math.sign(n)== -1) {senal = "↓"}
+
+      arrayResult.push(senal)
+      arrayResult.push(this.decimal(result, 2, "%"))
+
+      return arrayResult
+    },
+    porcentaje_Mkambio(){
+      let Actual = this.Mkambio
+      let Historico = this.Ayer_Mkambio
+      let Historial = this.historial_Mkambio
+      let senal
+      let n
+      let result
+      let arrayResult = []
+      
+
+      if (Historial == Actual) {
+        n      = (Actual - Historico)
+        result = ((n*100)/Historico)
+      } else {
+        n = (Actual - Historial)
+        result = ((n*100)/Historial)
+      }
+
+      if      (Math.sign(n)== 0) {senal = "="} 
+      else if (Math.sign(n)== 1) {senal = "↑"}
+      else if (Math.sign(n)== -1) {senal = "↓"}
+
+      arrayResult.push(senal)
+      arrayResult.push(this.decimal(result, 2, "%"))
+
+      return arrayResult
+    },
+    //Fin Calculo del porcentaje
+
   },
   methods: {
    
@@ -406,7 +662,60 @@ export default {
       let val = value.toFixed(n).replace(".", ",") + " " + simbolo;
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     },
-    async getDolar(fecha1, hora) {
+    async getDolar(){
+      let datos = await axios.get('https://monitordolar.com/api/index.php?action=ver')
+      
+      //Inicio datos del dia de hoy
+      let json = datos.data.actual
+      this.promedioTotal = Number(json.promedioTotal)
+      this.DolarToday    = Number(json.dolarToday)
+      this.LocalBitcoin  = Number(json.localBitcoin)
+      this.AirTM         = Number(json.airTM)
+      this.BolivarCucuta = Number(json.bolivarCucuta)
+      this.Yadioio       = Number(json.yadio_io)
+      this.Movicambio    = Number(json.movicambio)
+      this.Mkambio       = Number(json.mkambio)
+      this.horaActual    = json.hora
+      let fechaJson      = json.created_at
+      let arrayFecha     = fechaJson.split('-')
+      let arrayDia       = arrayFecha[2].split(' ')
+      this.añoActual     = arrayFecha[0]
+      this.mesActual     = arrayFecha[1]
+      this.diaActual     = arrayDia[0]
+      //Fin datos del dia de hoy
+
+      
+
+      //Inicio datos de ayer para sacar porcentaje
+      let AyerJson = datos.data.historial
+      this.Ayer_promedioTotal = Number(AyerJson.promedioTotal)
+      this.Ayer_DolarToday    = Number(AyerJson.dolarToday)
+      this.Ayer_LocalBitcoin  = Number(AyerJson.localBitcoin)
+      this.Ayer_AirTM         = Number(AyerJson.airTM)
+      this.Ayer_BolivarCucuta = Number(AyerJson.bolivarCucuta)
+      this.Ayer_Yadioio       = Number(AyerJson.yadio_io)
+      this.Ayer_Movicambio    = Number(AyerJson.movicambio)
+      this.Ayer_Mkambio       = Number(AyerJson.mkambio)
+      //Fin datos de ayer para sacar porcentaje
+
+      
+      //Inicio datos del historico
+      this.historial_promedioTotal  = this.promedioTotal
+      this.historial_DolarToday     = this.DolarToday
+      this.historial_LocalBitcoin   =  this.LocalBitcoin 
+      this.historial_AirTM          = this.AirTM        
+      this.historial_BolivarCucuta  =  this.BolivarCucuta
+      this.historial_Yadioio        =  this.Yadioio      
+      this.historial_Movicambio     =  this.Movicambio   
+      this.historial_Mkambio        =  this.Mkambio      
+
+      this.fechaActual = this.añoActual+'-'+this.mesActual+'-'+this.diaActual
+      this.horaSelect  = this.horaActual 
+      //Fin datos del historico
+
+
+    },
+    async getDolarHistorico(fecha1, hora) {
       let arrayFecha = fecha1.split("-");
       let horaI = hora;
       let anio = Number(arrayFecha[0]);
@@ -434,14 +743,14 @@ export default {
           this.noHistorial = false;
         } else {
           this.noHistorial = true;
-          this.promedioTotal = Number(datos.data.promedioTotal);
-          this.DolarToday = Number(datos.data.dolarToday);
-          this.LocalBitcoin = Number(datos.data.localBitcoin);
-          this.AirTM = Number(datos.data.airTM);
-          this.BolivarCucuta = Number(datos.data.bolivarCucuta);
-          this.Yadioio = Number(datos.data.yadio_io);
-          this.Movicambio = Number(datos.data.movicambio);
-          this.Mkambio = Number(datos.data.mkambio);
+          this.historial_promedioTotal = Number(datos.data.promedioTotal);
+          this.historial_DolarToday = Number(datos.data.dolarToday);
+          this.historial_LocalBitcoin = Number(datos.data.localBitcoin);
+          this.historial_AirTM = Number(datos.data.airTM);
+          this.historial_BolivarCucuta = Number(datos.data.bolivarCucuta);
+          this.historial_Yadioio = Number(datos.data.yadio_io);
+          this.historial_Movicambio = Number(datos.data.movicambio);
+          this.historial_Mkambio = Number(datos.data.mkambio);
         }
       } catch (error) {
         console.log("Ocurrio un error ->" + error);
@@ -451,7 +760,7 @@ export default {
     },
   },
   created() {
-    this.getDolar(this.fechaActual, this.horaSelect);
+    this.getDolar()
   },
 };
 </script>
@@ -496,6 +805,9 @@ main {
   padding: 4px;
   margin-bottom: 7px;
 }
+.resulCambio {
+   margin-bottom: 5px;
+  }
 .resulCambioArriba {
   margin-top: -13px;
 }
