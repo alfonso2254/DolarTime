@@ -3,6 +3,14 @@
 _Aplicación web para saber el precio del dolar en Venezuela así como también el porcentaje del aumento del mismo según la fecha en su defecto con el día anterior, así mismo tiene integrada una calculadora de Bolivares a Dolares y viceversa. Los datos son traidos por medio de una api de monitordolar.com por lo que no son fiables por el momento._
 
 ## * [Demo](https://dolartime-23d80.web.app/)  🚀
+
+#Screenshot
+![ScreenShot](src/assets/screenshot/ss1.JPG)
+![ScreenShot](src/assets/screenshot/ss1.JPG)
+![ScreenShot](src/assets/screenshot/ss1.JPG)
+![ScreenShot](src/assets/screenshot/ss1.JPG)
+![ScreenShot](src/assets/screenshot/ss1.JPG)
+
 ## Comenzando 🚀
 
 _Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo y pruebas._
