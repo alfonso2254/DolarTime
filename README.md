@@ -4,7 +4,7 @@ _Aplicación web para saber el precio del dolar en Venezuela así como también 
 
 ## * [Demo](https://dolartime-23d80.web.app/)  🚀
 
-#Screenshot
+# Screenshot
 ![ScreenShot](src/assets/screenshot/ss1.JPG)
 ![ScreenShot](src/assets/screenshot/ss2.JPG)
 ![ScreenShot](src/assets/screenshot/ss3.JPG)
