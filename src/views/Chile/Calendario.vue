@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col md="12">
-        <v-card >
+        <v-card>
           <v-row height="500" justify="center">
             <v-date-picker
               class="my-4"
@@ -39,21 +39,19 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(['mostrarLoading', 'ocultarLoading']),
+    ...mapMutations(["mostrarLoading", "ocultarLoading"]),
     async getDolarCl(dia) {
-      let arrayF = dia.split("-");
-      let ddmmyy = arrayF[2] + "-" + arrayF[1] + "-" + arrayF[0];
+      const arrayF = dia.split("-");
+      const ddmmyy = arrayF[2] + "-" + arrayF[1] + "-" + arrayF[0];
 
-  
       try {
         this.mostrarLoading({
-          titulo: 'Obteniendo información',
-          color: 'secundary'
-        })
-        let datos = await axios.get(
+          titulo: "Obteniendo información",
+          color: "secundary",
+        });
+        const datos = await axios.get(
           `https://mindicador.cl/api/dolar/${ddmmyy}`
         );
-        console.log(datos)
 
         if (datos.data.serie.length > 0) {
           this.valor = await datos.data.serie[0].valor;
@@ -62,12 +60,12 @@ export default {
         }
       } catch (error) {
         console.log(error);
-      }  finally {
+      } finally {
         this.ocultarLoading();
       }
     },
   },
-  
+
   created() {
     this.getDolarCl(this.fecha);
   },
