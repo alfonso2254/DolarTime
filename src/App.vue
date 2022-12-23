@@ -3,6 +3,7 @@
    
     <v-content>
       <router-view></router-view>
+
       <v-dialog
       v-model="loading.estado"
       hide-overlay
