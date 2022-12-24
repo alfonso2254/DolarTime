@@ -14,6 +14,7 @@ Vue.use(VueRouter)
     name: 'DolarCl',
     component: () => import(/* webpackChunkName: "DolarCl" */ '../views/Chile/Calendario.vue')
   }
+
 ]
 
 const router = new VueRouter({

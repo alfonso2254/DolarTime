@@ -21,4 +21,8 @@ export default new Vuex.Store({
       state.loading.estado = false
     },
   },
+  actions: {
+  },
+  modules: {
+  }
 })
